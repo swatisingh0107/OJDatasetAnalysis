@@ -62,8 +62,8 @@ table(OJ$STORE,OJ$StoreID)
 ```
 On cross classification of the Store and StorID, we built a a contingency table of the counts at each combination of factor levels.
   
-  |1|2|3|4|7|
-  |:--:|:--:|:--:|:--:|:--:|
+  ||1|2|3|4|7|
+  |:--:|:--:|:--:|:--:|:--:|:--:|
   |0|0|0|0|0|356|
   |1|157|0|0|0|0|
   |2|0|222|0|0|0|
