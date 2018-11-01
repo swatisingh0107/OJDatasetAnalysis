@@ -49,24 +49,25 @@ library(caret)
 str(OJ)
 skim(OJ)
 ```
-'data.frame:	1070 obs. of  18 variables:'
- '$ Purchase      : Factor w/ 2 levels "CH","MM": 1 1 1 2 1 1 1 1 1 1 ...'
- '$ WeekofPurchase: num  237 239 245 227 228 230 232 234 235 238 ...'
- '$ StoreID       : num  1 1 1 1 7 7 7 7 7 7 ...'
- '$ PriceCH       : num  1.75 1.75 1.86 1.69 1.69 1.69 1.69 1.75 1.75 1.75 ...'
- '$ PriceMM       : num  1.99 1.99 2.09 1.69 1.69 1.99 1.99 1.99 1.99 1.99 ...'
- '$ DiscCH        : num  0 0 0.17 0 0 0 0 0 0 0 ...'
- '$ DiscMM        : num  0 0.3 0 0 0 0 0.4 0.4 0.4 0.4 ...'
- '$ SpecialCH     : num  0 0 0 0 0 0 1 1 0 0 ...'
- '$ SpecialMM     : num  0 1 0 0 0 1 1 0 0 0 ...'
- '$ LoyalCH       : num  0.5 0.6 0.68 0.4 0.957 ...'
- '$ SalePriceMM   : num  1.99 1.69 2.09 1.69 1.69 1.99 1.59 1.59 1.59 1.59 ...'
- '$ SalePriceCH   : num  1.75 1.75 1.69 1.69 1.69 1.69 1.69 1.75 1.75 1.75 ...'
- '$ PriceDiff     : num  0.24 -0.06 0.4 0 0 0.3 -0.1 -0.16 -0.16 -0.16 ...'
- '$ Store7        : Factor w/ 2 levels "No","Yes": 1 1 1 1 2 2 2 2 2 2 ...'
- '$ PctDiscMM     : num  0 0.151 0 0 0 ...'
- '$ PctDiscCH     : num  0 0 0.0914 0 0 ...'
- '$ ListPriceDiff : num  0.24 0.24 0.23 0 0 0.3 0.3 0.24 0.24 0.24 ...'
- '$ STORE         : num  1 1 1 1 0 0 0 0 0 0 ...'
+![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/str(OJ).PNG "OJ dataset Structure")
+
+From the summary analysis of the nature of the values in different columns, we can see that SpecialCH, SpecialMM,Store, StoreID are rather categorical than numerical
+
+ ![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/Skim(OJ).PNG "Skim OJ dataset")
  
- 
+On skiming the data, we see that all the varibales have complete values. While analyzing the histograms, PctDiscMM and DiscMM show similar trends in data. Similary, SpecialCH and SpecialMM appear to be collinear. It is the same story of PriceCH and PctDiscCH.
+
+```{r}
+table(OJ$STORE,OJ$StoreID)
+```
+On cross classification of the Store and StorID, we built a a contingency table of the counts at each combination of factor levels.
+  
+  |1|2|3|4|7|
+  |:--:|:--:|:--:|:--:|:--:|
+  |0|0|0|0|0|356|
+  |1|157|0|0|0|0|
+  |2|0|222|0|0|0|
+  |3|0|0|196|0|0|
+  |4|0|0|0|139|0|
+  
+  Looking at the customer counts for Store and StoreID, one can see that Store and StoreID are essentially the same.
