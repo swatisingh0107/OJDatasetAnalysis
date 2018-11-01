@@ -51,6 +51,8 @@ skim(OJ)
 ```
 ![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/str(OJ).PNG "OJ dataset Structure")
 
+![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/summary(OJ).PNG "Dataset Summary")
+
 From the summary analysis of the nature of the values in different columns, we can see that SpecialCH, SpecialMM,Store, StoreID are rather categorical than numerical
 
  ![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/Skim(OJ).PNG "Skim OJ dataset")
