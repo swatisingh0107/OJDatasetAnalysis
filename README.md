@@ -70,4 +70,25 @@ On cross classification of the Store and StorID, we built a a contingency table 
   |3|0|0|196|0|0|
   |4|0|0|0|139|0|
   
-  Looking at the customer counts for Store and StoreID, one can see that Store and StoreID are essentially the same.
+Looking at the customer counts for Store and StoreID, one can see that Store and StoreID are essentially the same. It seems that the identifier for Store7 in Store column is 0. Both have the same number of count.
+Also, looking at the count of Store7 for yes values, we can deduce that 714 is the count of stores from 1-4.
+|No| Yes| 
+|:--:|:--:|
+|714| 356 |
+
+[Dimension Reduction](https://www.analyticsvidhya.com/blog/2015/07/dimension-reduction-methods/) refers to the process of converting a set of data having vast dimensions into data with lesser dimensions ensuring that it conveys similar information concisely. Before we move on with our modelling exercise, we will try to reduce the dimensions by removing information that is collinear, redundant or duplicate.  Store and Store7 duplicates the information captured in Store. Also we will transform some of the numerical variables into categorical variables.
+
+
+```{r}
+OJ<-OJ[, !(colnames(OJ) %in% c("Store7","STORE"))]
+
+#Convert SpecialCH, SpecialMM, StoreID into categorical variables
+OJ$StoreID<-as.factor(OJ$StoreID)
+OJ$SpecialCH<-as.factor(OJ$SpecialCH)
+OJ$SpecialMM<-as.factor(OJ$SpecialMM)
+OJ$Purchase<-as.factor(OJ$Purchase)
+
+#Data distribution for categorical variables
+prop.table(table(OJ$SpecialCH,OJ$SpecialMM)) 
+```
+
