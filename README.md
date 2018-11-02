@@ -177,10 +177,10 @@ plot(importance)
 ```
 ![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/Variable%20Importance.PNG "Variable Importance")
 
-Based on the above results of estimating variable importance and multi collinear pairs from the ggpairs, we can deduce that the few variables are of importance and the rest can be removed from our modelling purposes.
+Based on the above results of estimating variable importance and multi collinear pairs from the ggpairs, we can deduce that few variables are of importance and the rest can be removed from our modelling purposes.
 
 "LoyalCH" "PriceDiff" "StoreID" "ListPriceDiff" "WeekOfPurchase" "SpecialMM" "PriceMM" "SpecialCH" "SalePriceCH"
-This will form our second feature set 2
+This will form our second feature set.
 
 **Featureset2<- LoyalCH+PriceDiff+StoreID+ListPriceDiff+WeekofPurchase+SpecialMM+PriceMM+SpecialCH+SalePriceCH**
 
