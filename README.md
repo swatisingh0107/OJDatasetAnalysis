@@ -25,11 +25,11 @@ The data contains 1070 purchases where the customer either purchased Citrus Hill
 |STORE|Which of 5 possible stores the sale occured at|
 
 ## Objective
-This project is aimed to analyze the following:
-1. What variables influnece the sale of MM?
+Assumption is that there is higher margin on the sale of MM. The store chain wants to increase their overall revenue and would like to know the following:
+1. What variables influnece the sales of MM? Based on the highly significant variable , the store can devise strategies to improve the sales of MM.
 2. Can we have a predictive model to predict the probability of customers buying MM?
 
-To achieve this aim, we will first perform exploratory data analysis to prepare the data for modelling. Later in the project, we will perform various machine learning algorithms to identify features for modelling and compare two prediction models : Logistic regression vs Support Vector Machine.
+To achieve this aim, we will first perform exploratory data analysis to prepare the data for modelling. Later in this project, we will perform various machine learning algorithms to identify features for modelling and compare two prediction models : Logistic regression vs Support Vector Machine.
 
 ## Exploratory Data Analysis
 Let's load some R packages to assist with our analysis
@@ -74,6 +74,7 @@ On cross classification of the Store and StorID, we built a a contingency table 
   
 Looking at the customer counts for Store and StoreID, one can see that Store and StoreID are essentially the same. It seems that the identifier for Store7 in Store column is 0. Both have the same number of count.
 Also, looking at the count of Store7 for yes values, we can deduce that 714 is the count of stores from 1-4.
+
 |No| Yes| 
 |:--:|:--:|
 |714| 356 |
@@ -93,4 +94,141 @@ OJ$Purchase<-as.factor(OJ$Purchase)
 #Data distribution for categorical variables
 prop.table(table(OJ$SpecialCH,OJ$SpecialMM)) 
 ```
+
+   ||0|1|
+  |:--:|:--|:--|
+  |0| 0.69| 0.15|
+  |1| 0.14| 0.00|
+  
+Looking at the proportion of variables SpecialCH and SpecialMM, we can see that the case for special offers is very sparse.
+```{r}
+prop.table(table(OJ$Purchase)) # CH-MM 61%-39% split
+```
+ |CH|        MM|
+ |:--|:--|
+|0.6102804| 0.3897196|
+
+61% of the customers purchased CH whereas 39% of the customers purchased MM. MM has a higher margin and if sales of MM is increased, the revenue will also increase. 
+
+```{r}
+OJ$PurchaseMM<-ifelse(OJ$Purchase=="MM",1,0)
+OJ$PurchaseMM<-factor(OJ$PurchaseMM,levels=c(0,1))
+
+```
+Since this project requires to improve the sales of MM, we will modify the Purchase variable to reflect 1 when MM was purchased and 0 when MM was not purchased. This new inference is stored as new variable 'PurchaseMM'.
+All categorical attributes have now been checked for collinearity. We will now focus on the numeric columns to study trends and patterns and analyze if any of the numeric attributes have correlation.
+
+## Feature Selection
+### Check for multi- collinearity
+The function ggpairs() produces a matrix of plots for visualizing the correlation between variables.
+
+```{r}
+numericCols<-OJ[c(1,2,4,5,6,7,10,11,12,13,14,15,16)]
+plotNumeric = ggpairs(numericCols,
+            aes(colour = Purchase, alpha=0.9),
+            upper = list(continuous = wrap("cor", size = 2)),
+            diag = list(continuous = "barDiag"),
+            lower = list(continuous = "smooth"))
+suppressMessages(print(plotNumeric))
+
+```
+![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/GGPlotPairs.png "GGPlotPairs")
+
+Based on the process of elimination where correlation>0.7, we identified followin pairs of collinearity variables
+
+|Variable|	Correlation|
+|:--|:--:
+|PriceCH	|Week of purchase|
+|SalePriceMM	|DiscMM |
+|SalePriceCH	|DiscCH|
+|PriceDiff	|DiscMM, SalePriceMM|
+|PctDiscMM	|DiscMM, SalePriceMM,PriceDiff|
+|PctDiscCH	|DiscCH, SalePriceCH|
+
+Considering the result from ggpairs, if we eliminate the collinear pairs we get
+**Featureset1 <- StoreID+PriceCH+LoyalCH+PctDiscMM+PctDiscCH+ListPriceDiff**
+Now how do we decide which variables to eliminate. The importance can be estimated using a ROC curve analysis conducted for each attribute.
+### Rank features by importance
+```{r}
+#Prepare train and test data
+split=0.75
+set.seed(79056099)
+
+train_index <- sample(1:nrow(OJ), split * nrow(OJ)) 
+test_index <- setdiff(1:nrow(OJ), train_index)
+
+train_data <- OJ[train_index, ]
+test_data <- OJ[test_index,]
+
+# prepare training scheme
+control <- trainControl(method="repeatedcv", number=10, repeats=3)
+# train the model
+model <- train(PurchaseMM~.-Purchase, data=train_data, method="lvq", preProcess=c("center","scale"), trControl=control)
+# estimate variable importance
+importance <- varImp(model, scale=FALSE)
+# summarize importance
+print(importance)
+# plot importance
+plot(importance)
+
+```
+![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/Variable%20Importance.PNG "Variable Importance")
+
+Based on the above results of estimating variable importance and multi collinear pairs from the ggpairs, we can deduce that the few variables are of importance and the rest can be removed from our modelling purposes.
+
+"LoyalCH" "PriceDiff" "StoreID" "ListPriceDiff" "WeekOfPurchase" "SpecialMM" "PriceMM" "SpecialCH" "SalePriceCH"
+This will form our second feature set 2
+**Featureset2<- LoyalCH+PriceDiff+StoreID+ListPriceDiff+WeekofPurchase+SpecialMM+PriceMM+SpecialCH+SalePriceCH**
+### Random Forest Recursive Feature Elimination 
+We can also use RFE algorithm to configure to explore all possible subsets of the attributes. 
+
+```{r}
+#define the control using a random forest selection function
+set.seed(4)
+ctrl <- rfeControl(functions = rfFuncs,method = "repeatedcv",repeats = 5,verbose = FALSE)
+# run the RFE algorithm
+lmProfile <- rfe(train_data[,2:16], train_data[,17],
+                 sizes = 2:16,
+                 rfeControl = ctrl)
+# list the chosen features
+predictors(lmProfile)
+```
+ "LoyalCH"   "StoreID"   "PriceDiff"
+ 
+ ```{r}
+# plot the results
+plot(lmProfile, type=c("g", "o"))
+```
+![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/RFE.PNG)
+
+All attributes are selected in this example, although in the plot showing the accuracy of the different attribute subset sizes, we can see that just 3 attributes gives almost comparable results. Based on this result, we will form our third featureset
+**Featureset3 <- LoyalCH+StoreID+PriceDiff**
+
+## Logistic regression
+Now we are ready for regression analysis. We chose regression analysis because it is appropriate regression analysis to conduct when the dependent variable is dichotomous (binary). Logistic regression is used to describe data and to explain the relationship between one dependent binary variable and one or more nominal, ordinal, interval or ratio-level independent variables.[Reference](http://www.statisticssolutions.com/what-is-logistic-regression/)
+
+```{r}
+model1 <- train(PurchaseMM~StoreID+PriceCH+LoyalCH+PctDiscMM+PctDiscCH+ListPriceDiff, data = train_data,
+                       method = "glm",preProcess=c("center","scale"), family = "binomial",trControl=control)
+summary(model1)
+```
+![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/Model1.PNG)
+
+```{r}
+model2 <- train(PurchaseMM~LoyalCH+PriceDiff+StoreID+ListPriceDiff+WeekofPurchase+SpecialMM+PriceMM+SpecialCH+SalePriceCH, data = train_data,
+                       method = "glm",preProcess=c("center","scale"), family = "binomial",trControl=control)
+summary(model2)
+```
+![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/Model2.PNG)
+
+```{r}
+model3 <- train(PurchaseMM~LoyalCH+StoreID+PriceDiff, data = train_data,
+                       method = "glm",preProcess=c("center","scale"), family = "binomial",trControl=control)
+summary(model3)
+```
+![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/model3.PNG)
+
+On comparing the three models, the AIC score for model three is the lowest at 614.56
+
+
 
