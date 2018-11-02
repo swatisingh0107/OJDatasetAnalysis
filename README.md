@@ -242,7 +242,10 @@ We use the exponential function to calculate the odds ratios for each preditor.
 |:--|:--|:--|:--|:--|:--|:--|
 |0.4456994|   0.1387189|   1.0157003|   1.0687629|   0.8774379|   0.7225689|   0.4642658| 
 
-We will now calculate the prediction accuracy of our model. 
+Also based on the results above we can see **PriceDiff**, **StoreID1**, **LoyalCH** has significant effect on the sales of MM. 
+StoreID 1 ,Loyalty to CH and Price Difference between MM and CH , all have negative influence on the sales of MM. Since CH sells cheaper than MM, any unit increase in the Price Difference will have a negative effect on the probability of the purchase of MM.
+
+We will now calculate the prediction accuracy of our model.
 
 ```{r}
 Predict <- predict(model3,newdata=test_data)
@@ -288,7 +291,7 @@ confusionMatrix(data=PredictSVMRadial,test_data$PurchaseMM)
 ![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/SVMRadialAccuracy.PNG)
 
 Both SVM Linear and Radial return slightly better accuracy than the logistic regression model. However SVM Linear and SVM Radial return same accuracy. In order to select which SVM kernel is better we will compare the sensitivity of the confusion matrix for the two.
-The sensitivity is defined as the proportion of positive results out of the number of samples which were actually positive. Since the model is expected to 
+The sensitivity is defined as the proportion of positive results out of the number of samples which were actually positive. Since the model is expected to predict true MM customers, the sensitivity gives us the proportion of predicted positive MM customers out of total number of true MM customers. SVM Radial has the highest sensitivity of 89.16%
 
 
 
