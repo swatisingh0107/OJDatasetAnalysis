@@ -62,7 +62,7 @@ On skiming the data, we see that all the varibales have complete values. While a
 ```{r}
 table(OJ$STORE,OJ$StoreID)
 ```
-On cross classification of the Store and StorID, we built a a contingency table of the counts at each combination of factor levels.
+On cross classification of the Store and StorID, we built a contingency table of the counts at each combination of factor levels.
   
   ||1|2|3|4|7|
   |:--:|:--:|:--:|:--:|:--:|:--:|
