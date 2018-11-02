@@ -212,7 +212,7 @@ All attributes are selected in this example, although in the plot showing the ac
 **Featureset3 <- LoyalCH+StoreID+PriceDiff**
 
 ## Logistic regression
-Now we are ready for regression analysis. We chose regression analysis because it is appropriate regression analysis to conduct when the dependent variable is dichotomous (binary). Logistic regression is used to describe data and to explain the relationship between one dependent binary variable and one or more nominal, ordinal, interval or ratio-level independent variables.[Reference](http://www.statisticssolutions.com/what-is-logistic-regression/)
+Now we are ready for regression analysis. We chose logistic regression analysis because it is appropriate regression analysis to conduct when the dependent variable is dichotomous (binary). Logistic regression is used to describe data and to explain the relationship between one dependent binary variable and one or more nominal, ordinal, interval or ratio-level independent variables.[Reference](http://www.statisticssolutions.com/what-is-logistic-regression/)
 
 ```{r}
 model1 <- train(PurchaseMM~StoreID+PriceCH+LoyalCH+PctDiscMM+PctDiscCH+ListPriceDiff, data = train_data,
