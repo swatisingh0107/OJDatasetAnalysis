@@ -250,7 +250,7 @@ accuracy<-table(Predict,test_data$PurchaseMM)
 sum(diag(accuracy))/sum(accuracy)
 confusionMatrix(data=Predict,test_data$PurchaseMM)
 ```
-![alt text] (https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/Confusion%20Matrix%20Statistics.PNG)
+![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/Confusion%20Matrix%20Statistics.PNG)
 We have been able to reach an accuracy of 82% with a 95% confidence interval of 76.96% to 86.49%
 
 ## SVM
@@ -267,6 +267,30 @@ sum(diag(accuracy))/sum(accuracy)
 confusionMatrix(data=PredictSVMLinear,test_data$PurchaseMM)
 ```
 ![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/SVMLinearAccuracy.PNG)
+
+Support Vector Machine with Radial Kernel
+```{r}
+grid_radial <- expand.grid(sigma = c(0.01, 0.02, 0.025, 0.03, 0.04,
+ 0.05, 0.06, 0.07,0.08, 0.09, 0.1, 0.25, 0.5, 0.75,0.9),
+ C = c(0.01, 0.05, 0.1, 0.25, 0.5, 0.75,
+ 1, 1.5, 2,5))
+svm_Radial <- train(PurchaseMM~LoyalCH+StoreID+PriceDiff, data = train_data, method = "svmRadial",
+                 trControl=control,
+                 preProcess = c("center", "scale"),
+                 tuneGrid = grid_radial,
+                 tuneLength = 10)
+
+PredictSVMRadial <- predict(svm_Radial,newdata=test_data)
+accuracy<-table(PredictSVMRadial,test_data$PurchaseMM)
+sum(diag(accuracy))/sum(accuracy)
+confusionMatrix(data=PredictSVMRadial,test_data$PurchaseMM)
+```
+![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/SVMRadialAccuracy.PNG)
+
+Both SVM Linear and Radial return slightly better accuracy than the logistic regression model. However SVM Linear and SVM Radial return same accuracy. In order to select which SVM kernel is better we will compare the sensitivity of the confusion matrix for the two.
+The sensitivity is defined as the proportion of positive results out of the number of samples which were actually positive. Since the model is expected to 
+
+
 
 
 
