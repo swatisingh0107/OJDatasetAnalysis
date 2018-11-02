@@ -149,7 +149,7 @@ Considering the result from ggpairs, if we eliminate the collinear pairs we get
 
 **Featureset1 <- StoreID+PriceCH+LoyalCH+PctDiscMM+PctDiscCH+ListPriceDiff**
 
-Now how do we decide which variables to eliminate. The importance can be estimated using a ROC curve analysis conducted for each attribute.
+Now how do we decide which variables to eliminate. We will construct a Learning Vector Quantization (LVQ) model and then use varImp to estimate the variable importance.
 
 ### Rank features by importance
 ```{r}
