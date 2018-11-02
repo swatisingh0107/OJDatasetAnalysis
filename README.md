@@ -146,8 +146,11 @@ Based on the process of elimination where correlation>0.7, we identified followi
 |PctDiscCH	|DiscCH, SalePriceCH|
 
 Considering the result from ggpairs, if we eliminate the collinear pairs we get
+
 **Featureset1 <- StoreID+PriceCH+LoyalCH+PctDiscMM+PctDiscCH+ListPriceDiff**
+
 Now how do we decide which variables to eliminate. The importance can be estimated using a ROC curve analysis conducted for each attribute.
+
 ### Rank features by importance
 ```{r}
 #Prepare train and test data
@@ -178,8 +181,11 @@ Based on the above results of estimating variable importance and multi collinear
 
 "LoyalCH" "PriceDiff" "StoreID" "ListPriceDiff" "WeekOfPurchase" "SpecialMM" "PriceMM" "SpecialCH" "SalePriceCH"
 This will form our second feature set 2
+
 **Featureset2<- LoyalCH+PriceDiff+StoreID+ListPriceDiff+WeekofPurchase+SpecialMM+PriceMM+SpecialCH+SalePriceCH**
+
 ### Random Forest Recursive Feature Elimination 
+
 We can also use RFE algorithm to configure to explore all possible subsets of the attributes. 
 
 ```{r}
@@ -202,6 +208,7 @@ plot(lmProfile, type=c("g", "o"))
 ![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/RFE.PNG)
 
 All attributes are selected in this example, although in the plot showing the accuracy of the different attribute subset sizes, we can see that just 3 attributes gives almost comparable results. Based on this result, we will form our third featureset
+
 **Featureset3 <- LoyalCH+StoreID+PriceDiff**
 
 ## Logistic regression
@@ -229,6 +236,38 @@ summary(model3)
 ![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/model3.PNG)
 
 On comparing the three models, the AIC score for model three is the lowest at 614.56
+We use the exponential function to calculate the odds ratios for each preditor.
+
+|(Intercept)|     LoyalCH|    StoreID2|    StoreID3|    StoreID4|    StoreID7|   PriceDiff|
+|:--|:--|:--|:--|:--|:--|:--|
+|0.4456994|   0.1387189|   1.0157003|   1.0687629|   0.8774379|   0.7225689|   0.4642658| 
+
+We will now calculate the prediction accuracy of our model. 
+
+```{r}
+Predict <- predict(model3,newdata=test_data)
+accuracy<-table(Predict,test_data$PurchaseMM)
+sum(diag(accuracy))/sum(accuracy)
+confusionMatrix(data=Predict,test_data$PurchaseMM)
+```
+![alt text] (https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/Confusion%20Matrix%20Statistics.PNG)
+We have been able to reach an accuracy of 82% with a 95% confidence interval of 76.96% to 86.49%
+
+## SVM
+Support Vector Machine with Linear Kernel
+```{r}
+svm_Linear <- train(PurchaseMM~LoyalCH+StoreID+PriceDiff, data = train_data, method = "svmLinear",
+                 trControl=control,
+                 preProcess = c("center", "scale"),
+                 tuneLength = 10)
+
+PredictSVMLinear <- predict(svm_Linear,newdata=test_data)
+accuracy<-table(PredictSVMLinear,test_data$PurchaseMM)
+sum(diag(accuracy))/sum(accuracy)
+confusionMatrix(data=PredictSVMLinear,test_data$PurchaseMM)
+```
+![alt text](https://github.com/swatisingh0107/OJDatasetAnalysis/blob/master/images/SVMLinearAccuracy.PNG)
+
 
 
 
